@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Dict, Any
 from .prng import deterministic_shuffle
 
 def run_draw(participants, seed: str, winners_count: int) -> Dict[str, Any]:
