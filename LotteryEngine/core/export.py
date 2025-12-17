@@ -1,25 +1,24 @@
+import os
+
 import csv
 from typing import Dict, Any
 
 def export_result_csv(container: Dict[str, Any], outpath: str):
-    shuffled = container["draw"]["shuffled"]
+    winners = container["draw"].get("winners")
+    if not winners:
+        raise ValueError("Нет победителей для экспорта!")
 
-    extras = set()
-    for p in shuffled:
-        extras.update(set(p.keys()) - {"id", "name"})
-
-    fieldnames = ["position", "id", "name"] + sorted(extras)
-
+    fieldnames = ["position", "id", "name"]
+    os.makedirs(os.path.dirname(outpath), exist_ok=True)
     with open(outpath, "w", newline='', encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
-
-        for i, p in enumerate(shuffled, 1):
-            row = {"position": i, "id": p["id"], "name": p["name"]}
-            for k in extras:
-                row[k] = p.get(k, "")
-            writer.writerow(row)
-
+        for i, w in enumerate(winners, 1):
+            writer.writerow({
+                "position": i,
+                "id": w["id"],
+                "name": w["name"]
+            })
 
 def export_result_pdf(container: Dict[str, Any], outpath: str):
     try:
